@@ -39,6 +39,42 @@ def P_SRP(x,y):
 	return 1.0 - angle / np.pi
 
 
+
+
+class SRPMulti():
+	# multiple SRP hashes combined into a set of N hash codes
+	def __init__(self, reps, d, p): 
+		# reps = number of hashes (reps)
+		# d = dimensionality
+		# p = "bandwidth" = number of hashes (projections) per hash code
+		self.N = reps*p
+		self.d = d
+		self.p = p
+
+		# set up the gaussian random projection vectors
+		self.W = np.random.normal(size = (self.N,d))
+		self.powersOfTwo = np.array([2**i for i in range(self.N)])
+
+	def hash(self,x): 
+		# p is the number of concatenated hashes that go into each
+		# of the final output hashes
+		h = np.sign( np.dot(self.W,x) )
+		h = np.clip( h, 0, 1)
+		if self.p > 1:
+			h = np.reshape(h,(-1,self.p))
+			n_hashes = h.shape[0]
+			powersOfTwo = np.array([2**i for i in range(self.p)])
+			codes = np.zeros(n_hashes)
+			for idx,hi in enumerate(h): 
+				codes[idx] = np.dot(hi,powersOfTwo)
+			return codes
+		else: 
+			return(h)
+
+
+
+
+
 class SRP():
 	def __init__(self, N, d): 
 		# N = number of hashes 
@@ -57,6 +93,8 @@ class SRP():
 		return np.dot( h, self.powersOfTwo)
 
 	def hash_independent(self,x,p = 1): 
+		# p is the number of concatenated hashes that go into each
+		# of the final output hashes
 		h = np.sign( np.dot(self.W,x) )
 		h = np.clip( h, 0, 1)
 		if p > 1:

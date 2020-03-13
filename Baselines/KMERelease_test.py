@@ -3,6 +3,8 @@ import scipy.stats
 import matplotlib.pyplot as plt 
 import sys 
 
+import pickle
+
 from KMERelease import * 
 
 def KDE(x,data): 
@@ -28,6 +30,13 @@ data = np.concatenate((data1,data2),axis = 0)
 
 np.random.seed(20)
 algo = KMEReleaseDP_1(1.0,50, data, k, sigma_public = 1.0, debug = True)
+
+# handle = open('temp.pickle', 'wb')
+# pickle.dump(algo, handle, protocol=pickle.HIGHEST_PROTOCOL)
+# handle = open('temp.pickle', 'rb')
+# algo = pickle.load(handle)
+
+
 
 q = np.linspace(-1,1,100)
 q = np.reshape(q,(100,1))

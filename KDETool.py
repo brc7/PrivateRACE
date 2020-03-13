@@ -1,4 +1,4 @@
-from Race.hashes import *
+from race.hashes import *
 import numpy as np 
 import argparse
 import sys

@@ -75,3 +75,78 @@ class SpectralDP():
 			output += coeff.imag*np.sin(-2*np.pi*indices*q)
 
 		return output
+
+
+
+class ScalableSpectralDP():
+	def __init__(self, epsilon, M, data, function, sensitivity, debug = False):
+		# data is n x d data matrix
+		# function is a callable with the following form: 
+		# function(x,data) -> scalar 
+		# where x is a d-dimensional vector and data is a n x d data matrix
+		# sensitivity is the sensitivity of function(x,data)
+		self.epsilon = epsilon
+		self.sensitivity = sensitivity
+		self.d = data.shape[1] # dimensions
+		self.n = data.shape[0]
+		self.M = M # 2*M for Fourier? 
+
+		# lattice is just all the points in the unit grid
+		# bravais lattice for the FFT evaluation
+		# This is the signal we will take the FFT of
+		X = np.zeros([self.M for _ in range(self.d)]) # (k,k,k, ...d... k) array of values to feed into fftn
+		for idx, point in enumerate(self.lattice(self.M-1,self.d)):
+			X[idx] = function(point*1.0/self.M,data)
+
+		if debug: 
+			print("Values of X:")
+			print(X)
+
+		self.coefficients = np.fft.fftn(X) / len(X)
+		lam = 2*self.M**self.d * self.sensitivity / self.epsilon
+
+		self.noisy_coefficients = self.coefficients + np.random.laplace(loc = 0.0, scale = lam, size = self.coefficients.shape)
+		self.noisy_coefficients = self.coefficients + 1j*np.random.laplace(loc = 0.0, scale = lam, size = self.coefficients.shape)
+
+		if debug:
+			print("Fourier coefficients:")
+			print(self.coefficients.shape)
+
+	def query(self,q): # q is the d-dimensional query in the unit hypercube in R^d
+
+		output = 0.0
+		for indices in self.lattice(self.M-1,self.d): 
+			coeff = self.noisy_coefficients[np.array(indices,dtype = int)]
+			output += coeff.real*np.cos(-2*np.pi*indices*q)
+			output += coeff.imag*np.sin(-2*np.pi*indices*q)
+		return output
+
+	def set_epsilon(self,epsilon): 
+		self.epsilon = epsilon
+
+		lam = 2*self.M**self.d * self.sensitivity / self.epsilon
+		self.noisy_coefficients = self.coefficients + np.random.laplace(loc = 0.0, scale = lam, size = self.coefficients.shape)
+		self.noisy_coefficients = self.coefficients + 1j*np.random.laplace(loc = 0.0, scale = lam, size = self.coefficients.shape)
+
+
+	def lattice(self,k,d):
+		# Generator, yields interpolation values
+		vector = np.zeros(d)
+		yield vector
+		while np.sum(vector) < d*k:
+			for i in reversed(range(d)):
+				if vector[i] < k:
+					vector[i] += 1
+					break
+				else:
+					if i is not 0:
+						vector[i] = 0
+			yield vector
+
+
+
+
+
+
+
+

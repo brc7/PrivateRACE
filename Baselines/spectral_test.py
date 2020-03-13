@@ -3,6 +3,7 @@ import scipy.stats
 import matplotlib.pyplot as plt 
 import sys 
 from spectral import * 
+import pickle
 
 def KDE(x,data): 
 	val = 0
@@ -21,7 +22,16 @@ data2 = np.random.normal(loc = 0.8,scale = 0.02,size = (N,d))
 data = np.concatenate((data1,data2),axis = 0)
 
 print(data.shape)
-algo = SpectralDP(1.0, 100, data, KDE, 1.0 / N, debug = True)
+algo = ScalableSpectralDP(1.0, 100, data, KDE, 1.0 / N, debug = True)
+
+
+handle = open('temp.pickle', 'wb')
+pickle.dump(algo, handle, protocol=pickle.HIGHEST_PROTOCOL)
+handle = open('temp.pickle', 'rb')
+algo = pickle.load(handle)
+
+algo.set_epsilon(1000.0)
+
 
 q = np.linspace(0,1,100)
 q = np.reshape(q,(100,1))

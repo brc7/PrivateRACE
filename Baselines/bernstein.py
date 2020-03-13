@@ -119,6 +119,7 @@ class ScalableBernsteinDP():
 		# where x is a d-dimensional vector and data is a n x d data matrix
 		# sensitivity is the sensitivity of function(x,data)
 		self.epsilon = epsilon
+		self.sensitivity = sensitivity
 		self.d = data.shape[1] # dimensions
 		self.k = k
 
@@ -126,14 +127,14 @@ class ScalableBernsteinDP():
 		for idx, point in enumerate(self.lattice(self.k,self.d)):
 			self.interpolationValuesGT[idx] = function(point*1.0/self.k,data)
 
-		lam = sensitivity * (self.k+1)**self.d * 1.0 / epsilon # for laplace mechanism
+		lam = self.sensitivity * (self.k+1)**self.d * 1.0 / epsilon # for laplace mechanism
 		self.interpolationValues = self.interpolationValuesGT + np.random.laplace(loc = 0.0, scale = lam, size = (self.k+1)**self.d);
 		if debug: 
 			print("Interpolation values:")
 			print(self.interpolationValues)
 
 	def set_epsilon(self, epsilon): 
-		lam = sensitivity * (self.k+1)**self.d * 1.0 / epsilon # for laplace mechanism
+		lam = self.sensitivity * (self.k+1)**self.d * 1.0 / epsilon # for laplace mechanism
 		self.interpolationValues = self.interpolationValuesGT + np.random.laplace(loc = 0.0, scale = lam, size = (self.k+1)**self.d);
 
 	def query(self,q): # q is the d-dimensional query in the unit hypercube in R^d

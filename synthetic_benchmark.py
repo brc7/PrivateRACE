@@ -1,8 +1,8 @@
-from Baselines.spectral import * 
-from Baselines.KMERelease import * 
-from Baselines.bernstein import * 
-from Race.race import *
-from Race.hashes import *
+from baselines.spectral import * 
+from baselines.KMERelease import * 
+from baselines.bernstein import * 
+from race.race import *
+from race.hashes import *
 
 import numpy as np 
 import matplotlib.pyplot as plt 

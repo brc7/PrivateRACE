@@ -2,10 +2,8 @@ import numpy as np
 import scipy.stats
 import matplotlib.pyplot as plt 
 import sys 
-
+import pickle
 from bernstein import * 
-
-
 
 def KDE(x,data): 
 	val = 0
@@ -27,6 +25,11 @@ data = np.concatenate((data1,data2),axis = 0)
 # data = np.reshape(data,(N,1))
 print(data.shape)
 algo = ScalableBernsteinDP(10.0, 40, data, KDE, 1.0 / N)
+
+# handle = open('temp.pickle', 'wb')
+# pickle.dump(algo_1, handle, protocol=pickle.HIGHEST_PROTOCOL)
+# handle = open('temp.pickle', 'rb')
+# algo = pickle.load(handle)
 
 q = np.linspace(0,1,100)
 q = np.reshape(q,(100,1))
@@ -50,7 +53,8 @@ d = 2
 np.random.seed(42) # lol
 data = np.random.multivariate_normal((0.5,0.5), ((0.01,0.02),(0,0.01)), size = N)
 print(data.shape)
-algo = BernsteinDP(1000, 20, data, KDE, 1.0 / N)
+algo_1 = BernsteinDP(1000, 20, data, KDE, 1.0 / N)
+
 
 M = 20
 t1 = np.linspace(0,1,M)

@@ -45,7 +45,6 @@ def KDE(x,data):
 
 
 dataset = np.load(args.data)
-dataset = dataset[0:100,:]
 
 N,d = dataset.shape
 

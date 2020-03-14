@@ -4,6 +4,7 @@ import scipy.special
 import scipy.integrate
 import math
 
+import sys
 
 '''
 Uses ideas from Hall's thesis
@@ -94,31 +95,44 @@ class ScalableSpectralDP():
 		# lattice is just all the points in the unit grid
 		# bravais lattice for the FFT evaluation
 		# This is the signal we will take the FFT of
+		if debug: 
+			print("Computing Signal:")
+			sys.stdout.flush()
+
 		X = np.zeros([self.M for _ in range(self.d)]) # (k,k,k, ...d... k) array of values to feed into fftn
-		for idx, point in enumerate(self.lattice(self.M-1,self.d)):
-			X[idx] = function(point*1.0/self.M,data)
+		
+		for m, indices in enumerate(self.lattice(self.M-1,self.d)): 
+			X[np.array(indices,dtype = int)] = function(indices*1.0/self.M,data)
+			if debug: 
+				sys.stdout.write('\r')
+				sys.stdout.write('Progress: {0:.4f}'.format(m/(self.M**self.d) * 100)+' %')
+				sys.stdout.flush()
 
 		if debug: 
-			print("Values of X:")
-			print(X)
+			print('\nComputing Fourier:')
+
+		# if debug: 
+		# 	print("Values of X:")
+		# 	print(X)
+
 
 		self.coefficients = np.fft.fftn(X) / len(X)
-		lam = 2*self.M**self.d * self.sensitivity / self.epsilon
 
+		lam = 2*self.M**self.d * self.sensitivity / self.epsilon
 		self.noisy_coefficients = self.coefficients + np.random.laplace(loc = 0.0, scale = lam, size = self.coefficients.shape)
 		self.noisy_coefficients = self.coefficients + 1j*np.random.laplace(loc = 0.0, scale = lam, size = self.coefficients.shape)
 
-		if debug:
-			print("Fourier coefficients:")
-			print(self.coefficients.shape)
+		# if debug:
+		# 	print("Fourier coefficients:")
+		# 	print(self.coefficients.shape)
 
 	def query(self,q): # q is the d-dimensional query in the unit hypercube in R^d
-
 		output = 0.0
-		for indices in self.lattice(self.M-1,self.d): 
-			coeff = self.noisy_coefficients[np.array(indices,dtype = int)]
-			output += coeff.real*np.cos(-2*np.pi*indices*q)
-			output += coeff.imag*np.sin(-2*np.pi*indices*q)
+		for indices in self.lattice(self.M-1,self.d):
+			# coeff = self.noisy_coefficients[tuple(np.array(indices,dtype = int))]
+			coeff = self.coefficients[tuple(np.array(indices,dtype = int))]
+			output += coeff.real*np.cos(-2*np.pi*np.dot(indices,q))
+			output += coeff.imag*np.sin(-2*np.pi*np.dot(indices,q))
 		return output
 
 	def set_epsilon(self,epsilon): 

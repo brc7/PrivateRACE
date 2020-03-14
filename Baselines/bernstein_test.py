@@ -46,19 +46,43 @@ plt.plot(q,real_out,label = "Real KDE")
 plt.plot(q,fake_out, label = "Bernstein Approximation")
 plt.legend()
 plt.show()
-sys.exit()
+# sys.exit()
 
 N = 100
 d = 2
 np.random.seed(42) # lol
 data = np.random.multivariate_normal((0.5,0.5), ((0.01,0.02),(0,0.01)), size = N)
 print(data.shape)
-algo_1 = BernsteinDP(1000, 20, data, KDE, 1.0 / N)
+
+scale_factor = 4
 
 
-M = 20
-t1 = np.linspace(0,1,M)
-t2 = np.linspace(0,1,M)
+def KDE(x,data): 
+	val = 0
+	n = 0 
+	for xi in data: 
+		val += np.exp(-np.linalg.norm(x - xi) / 0.2 )
+		n += 1
+	return val / n 
+
+
+def ScaledKDE(x,data): 
+	val = 0
+	n = 0 
+	for xi in data: 
+		val += np.exp(-np.linalg.norm(x - xi) / (0.2/scale_factor) )
+		n += 1
+	return val / n 
+
+
+
+scaled_data = data*1.0/scale_factor
+algo_1 = BernsteinDP(100, 20, scaled_data, ScaledKDE, 1.0 / N)
+
+
+M = 10
+t1 = np.linspace(0,scale_factor,M)
+t2 = np.linspace(0,scale_factor,M)
 T1,T2 = np.meshgrid(t1,t2)
 Z = np.zeros((M,M))
 Zp = np.zeros((M,M))
@@ -67,7 +91,7 @@ for i,t1i in enumerate(t1):
 	sys.stdout.flush()
 	for j,t2j in enumerate(t2):
 		Z[i,j] = KDE(np.array([t1i,t2j]),data)
-		Zp[i,j] = algo.query(np.array([t1i,t2j]))
+		Zp[i,j] = algo_1.query(np.array([t1i,t2j])*1.0/scale_factor)
 
 plt.figure()
 plt.subplot(121)

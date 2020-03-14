@@ -129,9 +129,9 @@ class ScalableBernsteinDP():
 
 		lam = self.sensitivity * (self.k+1)**self.d * 1.0 / epsilon # for laplace mechanism
 		self.interpolationValues = self.interpolationValuesGT + np.random.laplace(loc = 0.0, scale = lam, size = (self.k+1)**self.d);
-		if debug: 
-			print("Interpolation values:")
-			print(self.interpolationValues)
+		# if debug: 
+		# 	print("Interpolation values:")
+		# 	print(self.interpolationValues)
 
 	def set_epsilon(self, epsilon): 
 		lam = self.sensitivity * (self.k+1)**self.d * 1.0 / epsilon # for laplace mechanism

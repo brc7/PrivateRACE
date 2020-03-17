@@ -121,10 +121,9 @@ if args.kmerelease:
 		for i,q in enumerate(queries):
 			val = algo.query(q,kernel)
 			values[i] = val
-			if i%100 == 0: 
-				sys.stdout.write('\r')
-				sys.stdout.write('Epsilon: {0:.4f} Progress: {0:.4f}'.format(ep,i/NQ * 100)+' %')
-				sys.stdout.flush()
+			sys.stdout.write('\r')
+			sys.stdout.write('Epsilon: {0:.4f} Progress: {0:.4f}'.format(ep,i/NQ * 100)+' %')
+			sys.stdout.flush()
 		sys.stdout.write('\n')
 
 		err = np.abs(val - gtruth/args.N)

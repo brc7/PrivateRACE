@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.stats
+import sys 
 
 # Bernstein notes:
 # should suffer from curse of dimensionality due to 
@@ -126,6 +127,10 @@ class ScalableBernsteinDP():
 		self.interpolationValuesGT = np.zeros((self.k+1)**self.d) # function eval'd at each interpolationPoint
 		for idx, point in enumerate(self.lattice(self.k,self.d)):
 			self.interpolationValuesGT[idx] = function(point*1.0/self.k,data)
+			if debug: 
+				sys.stdout.write('\r')
+				sys.stdout.write('Progress: {0:.4f}'.format(idx/((self.k+1)**self.d) * 100)+' %')
+				sys.stdout.flush()
 
 		lam = self.sensitivity * (self.k+1)**self.d * 1.0 / epsilon # for laplace mechanism
 		self.interpolationValues = self.interpolationValuesGT + np.random.laplace(loc = 0.0, scale = lam, size = (self.k+1)**self.d);

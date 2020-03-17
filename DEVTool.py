@@ -70,7 +70,7 @@ if args.bernstein:
 	sys.stdout.flush()
 
 	f = open(args.bernstein[0],'rb')
-	scale_factor = args.bernstein[1]
+	scale_factor = int(args.bernstein[1])
 	algo = pickle.load(f)
 	start = time.time()
 	results = []

@@ -47,6 +47,8 @@ for j,data in enumerate(dataset):
 		sys.stdout.write('Progress: {0:.4f}'.format(j/N * 100)+' %')
 		sys.stdout.flush()
 
+results = results / N
+
 output_filename = os.path.splitext(args.data)[0]+'.gtruth'
 np.savetxt(output_filename, results, delimiter=',')
 

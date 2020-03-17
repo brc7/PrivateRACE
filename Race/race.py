@@ -6,28 +6,38 @@ class RACE():
 		self.R = repetitions # number of ACEs (rows) in the array
 		self.W = hash_range  # range of each ACE (width of each row)
 		self.counts = np.zeros((self.R,self.W),dtype = self.dtype)
+		self.real_counts = np.zeros((self.R,self.W),dtype = self.dtype)
 
 	def add(self, hashvalues): 
 		for idx, hashvalue in enumerate(hashvalues): 
 			rehash = int(hashvalue)
 			rehash = rehash % self.W
-			self.counts[idx,rehash] += 1
+			self.real_counts[idx,rehash] += 1
 
 	def remove(self, hashvalues): 
 		for idx, hashvalue in enumerate(hashvalues): 
 			rehash = int(hashvalue)
 			rehash = rehash % self.W
-			self.counts[idx,rehash] += -1
+			self.real_counts[idx,rehash] += -1
 
-	def make_private(self, epsilon):
+	def set_epsilon(self, epsilon):
 		# make the whole RACE sketch epsilon-differentially private
-		N = np.sum(self.counts[0,:])
-		noise = np.random.laplace(scale = self.R / (N * epsilon), size=self.counts.shape)
+		N = np.sum(self.real_counts[0,:])
+		noise = np.random.laplace(scale = self.R / (N * epsilon), size=self.real_counts.shape)
 		noise = np.floor(noise)
-		self.counts += np.array(noise,dtype = self.dtype)
+		self.counts = np.array(noise,dtype = self.dtype)
 
 	def clear(self): 
 		self.counts = np.zeros((self.R,self.W), dtype = self.dtype)
+
+	def non_private_query(self, hashvalues):
+		mean = 0
+		N = np.sum(self.real_counts[0,:])
+		for idx, hashvalue in enumerate(hashvalues): 
+			rehash = int(hashvalue)
+			rehash = rehash % self.W
+			mean = mean + self.real_counts[idx,rehash]
+		return mean/(self.R * N)
 
 	def query(self, hashvalues):
 		mean = 0

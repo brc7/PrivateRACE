@@ -48,14 +48,21 @@ dataset = np.load(args.data)
 
 N,d = dataset.shape
 
+
+# with append option in argparse, allows multiple -r 10 10 -r 20 20 etc 
+# if args.race: 
+# 	for (hash_range,reps) in args.race:
+
 if args.race: 
 	# Do RACE 
 	hash_range = args.race[0]
 	reps = args.race[1]
 
-	if args.kernel_id == 0: 
+	if args.kernel_id == 0:
+		np.random.seed(42)
 		lsh = L2LSH(reps,d,args.bandwidth)
 	elif args.kernel_id == 1:
+		np.random.seed(42)
 		lsh = SRPMulti(reps,d,int(args.bandwidth))
 	else: 
 		print("Unsupported kernel (hash function) id.") 

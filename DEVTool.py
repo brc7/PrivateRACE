@@ -56,12 +56,13 @@ if args.race:
 
 	for ep in args.epsilon: # for each epsilon
 		algo.set_epsilon(ep) # private wth this epsilon
+		print("Epsilon =",ep)
 		for i,q in enumerate(queries): # for each query
 			val = algo.query(lsh.hash(np.array(q)))
 			values[i] = val
 			if i%100 == 0: 
 				sys.stdout.write('\r')
-				sys.stdout.write('Epsilon: {0:.4f} Progress: {0:.4f}'.format(ep,i/NQ * 100)+' %')
+				sys.stdout.write('Progress: {0:.4f}'.format(i/NQ * 100)+' %')
 				sys.stdout.flush()
 		sys.stdout.write('\n')
 
@@ -83,11 +84,12 @@ if args.bernstein:
 	values = np.zeros_like(gtruth)
 	for ep in args.epsilon: 
 		algo.set_epsilon(ep)
+		print("Epsilon =",ep)
 		for i,q in enumerate(queries):
 			val = algo.query(q/scale_factor)
 			values[i] = val
 			sys.stdout.write('\r')
-			sys.stdout.write('Epsilon: {0:.4f} Progress: {0:.4f}'.format(ep,i/NQ * 100)+' %')
+			sys.stdout.write('Progress: {0:.4f}'.format(i/NQ * 100)+' %')
 			sys.stdout.flush()
 		sys.stdout.write('\n')
 		err = np.abs(val - gtruth/args.N)
@@ -117,11 +119,12 @@ if args.kmerelease:
 	values = np.zeros_like(gtruth)
 	for ep in args.epsilon: 
 		algo.set_epsilon(ep)
+		print("Epsilon =",ep)
 		for i,q in enumerate(queries):
 			val = algo.query(q,kernel)
 			values[i] = val
 			sys.stdout.write('\r')
-			sys.stdout.write('Epsilon: {0:.4f} Progress: {0:.4f}'.format(ep,i/NQ * 100)+' %')
+			sys.stdout.write('Progress: {0:.4f}'.format(i/NQ * 100)+' %')
 			sys.stdout.flush()
 		sys.stdout.write('\n')
 

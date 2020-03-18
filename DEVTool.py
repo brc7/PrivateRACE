@@ -64,7 +64,7 @@ if args.race:
 				sys.stdout.write('\r')
 				sys.stdout.write('Progress: {0:.4f}'.format((j*NQ + i)/(NQ*len(args.epsilon)) * 100)+' %')
 				sys.stdout.flush()
-		err = np.abs(val - gtruth) # error vector
+		err = np.abs(val - gtruth) / gtruth # error vector
 		results.append((np.mean(err),np.std(err))) # mean,std error 
 	sys.stdout.write('\n')
 	end = time.time()
@@ -89,7 +89,7 @@ if args.bernstein:
 			sys.stdout.write('\r')
 			sys.stdout.write('Progress: {0:.4f}'.format((j*NQ + i)/(NQ*len(args.epsilon)) * 100)+' %')
 			sys.stdout.flush()
-		err = np.abs(val - gtruth)
+		err = np.abs(val - gtruth) / gtruth
 		results.append((np.mean(err),np.std(err)))
 	sys.stdout.write('\n')
 	end = time.time()
@@ -123,7 +123,7 @@ if args.kmerelease:
 			sys.stdout.write('\r')
 			sys.stdout.write('Progress: {0:.4f}'.format((j*NQ + i)/(NQ*len(args.epsilon)) * 100)+' %')
 			sys.stdout.flush()
-		err = np.abs(val - gtruth)
+		err = np.abs(val - gtruth) / gtruth
 		results.append((np.mean(err),np.std(err)))
 	sys.stdout.write('\n')
 	end = time.time()

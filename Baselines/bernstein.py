@@ -150,11 +150,18 @@ class ScalableBernsteinDP():
 		for value,k_values in zip(self.interpolationValues,self.lattice(self.k,self.d)): 
 			# compute binomial coefficient for this value of k
 			coeff = 1.0
-			for qi,v in zip(q,k_values):
-				# print(v,self.k,qi)
-				coeff *= scipy.stats.binom.pmf(v,self.k,qi,loc=0)
+			for qi,vi in zip(q,k_values):
+				coeff *= self.binom(int(self.k),int(vi))*(qi**vi)*(1 - qi)**(self.k - vi)
+				# coeff *= scipy.stats.binom.pmf(vi,self.k,qi,loc=0)
 			output += coeff * value
 		return output
+
+	def binom(self,n,k): # from here: https://gist.github.com/rougier/ebe734dcc6f4ff450abf
+		if not 0<=k<=n: return 0
+		b=1
+		for t in range(min(k,n-k)):
+			b*=n; b/=t+1; n-=1
+		return b
 
 	def lattice(self,k,d):
 		# Generator, yields interpolation values

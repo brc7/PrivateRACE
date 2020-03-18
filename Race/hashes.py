@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.stats import norm # for P_L2
 import math 
+from scipy.special import ndtr
 
 class L2LSH():
 	def __init__(self, N, d, r): 
@@ -21,16 +22,12 @@ class L2LSH():
 
 
 def P_L2(c,w):
-    try: 
-        p = [1 - 2*norm.cdf(-w/ci) - 2.0/(math.sqrt(2*math.pi)*(w/ci)) * (1 - math.exp(-0.5*(w**2)/(ci**2)) ) for ci in c ]
-        p = np.array(p)
-        p[np.where(c == 0)] = 1
-    except TypeError: 
-    	try: 
-	        p = 1 - 2*norm.cdf(-w/c) - 2.0/(math.sqrt(2*math.pi)*(w/c)) * (1 - math.exp(-0.5*(w**2)/(c**2)) )
-    	except: 
-    		p = 1 
-    return p
+	try: 
+		p = 1 - 2*ndtr(-w/c) - 2.0/(np.sqrt(2*math.pi)*(w/c)) * (1 - np.exp(-0.5 * (w**2)/(c**2)))
+		return p
+	except:
+		return 1
+	# to fix nans, p[np.where(c == 0)] = 1
 
 def P_SRP(x,y): 
 	x_u = x / np.linalg.norm(x)

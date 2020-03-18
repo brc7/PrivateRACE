@@ -11,9 +11,11 @@ import math
 
 
 
+
+
 # Load dataset
-data = np.loadtxt('src/synthetic.csv',delimiter = ',')
-data = data[0:1000:]
+data = np.loadtxt('race/synthetic.csv',delimiter = ',')
+data = data[0:10000:]
 data = data[:,0:2]
 
 
@@ -23,21 +25,21 @@ d = data.shape[1]
 
 # Generate queries
 np.random.seed(420)
-NQ = 400
+NQ = 10000
 queries = np.random.random(size = (NQ,d))
 queries -= 0.5
 queries *= min(data.max(),np.abs(data.min()))
 
 
-# Generate ground truth
-print("Computing ground truth for",NQ,"queries")
-sys.stdout.flush()
-
 def k(x,y): 
 	# w is GLOBAL (sorry, so so sorry)
 	# i had to get this done so i could sleep ok? ok :(
 	w = 5.0
-	return P_L2(np.linalg.norm(x - y),w)
+	c = np.linalg.norm(x - y)
+	if c == 0: 
+		return 1 
+	else: 
+		return P_L2(c,w)
 
 def KDE(x,data): 
 	val = 0
@@ -46,6 +48,50 @@ def KDE(x,data):
 		val += k(xi,x)
 		n += 1
 	return val / n 
+
+# Profile the damn thing 
+dmin = np.min(data)
+dmax = np.max(data)
+data_BS = data - dmin
+data_BS /= (dmax - dmin)
+queries_BS = queries - dmin
+queries_BS /= (dmax - dmin)
+
+import cProfile, pstats, io
+pr = cProfile.Profile()
+pr.enable()
+A_BS = ScalableBernsteinDP(1.0, 4, data_BS, KDE, 1.0 / N, debug = False)
+pr.disable()
+pr.create_stats()
+ps = pstats.Stats(pr)
+ps.sort_stats('time')
+ps.print_stats()
+ps.print_callers()
+sys.exit()
+
+import cProfile, pstats, io
+pr = cProfile.Profile()
+pr.enable()
+
+vals = []
+for qi in queries_BS: 
+	vals.append(A_BS.query(qi))
+
+pr.disable()
+pr.create_stats()
+ps = pstats.Stats(pr)
+ps.sort_stats('time')
+ps.print_stats()
+ps.print_callers()
+
+
+
+sys.exit()
+
+
+# Generate ground truth
+print("Computing ground truth for",NQ,"queries")
+sys.stdout.flush()
 
 gt = []
 for qi in queries: 
@@ -108,19 +154,28 @@ queries_BS = queries - dmin
 queries_BS /= (dmax - dmin)
 # w = sigma*1.0 / (dmax - dmin) # tbh idk what this is for
 
+# import cProfile
+# with cProfile.Profile() as pr:
 A_BS = ScalableBernsteinDP(1.0, 4, data_BS, KDE, 1.0 / N, debug = False)
+# pr.print_stats()
 
+
+
+# with cProfile.Profile() as pr2:
 for ep in epsilon: 
 	print("Attempting bernstein with epsilon =",ep)
 	sys.stdout.flush()
 	A_BS.set_epsilon(ep)
 
 	vals = []
+
 	for qi in queries_BS: 
 		vals.append(A_BS.query(qi))
 	vals = np.array(vals)
 	print(np.mean(np.abs(vals - gt)))
 	BS_Results.append( (np.mean(np.abs(vals - gt)),np.std(np.abs(vals - gt))))
+# pr2.print_stats()
+
 
 BS_Results = np.array(BS_Results)
 plt.errorbar(epsilon,BS_Results[:,0],BS_Results[:,1],label = "BS")

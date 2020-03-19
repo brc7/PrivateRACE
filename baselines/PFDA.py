@@ -1,5 +1,5 @@
 import numpy as np
-import scipy as sp 
+import sys 
 
 '''
 Approach does not directly apply to higher dimensions
@@ -13,8 +13,9 @@ You give it a bunch of functions, it returns the mean
 
 
 class PFDA():
-	def __init__(self, epsilon, data, function, debug = False):
+	def __init__(self, epsilon, data, function, delta = 0.1, debug = False):
 		self.epsilon = epsilon
+		self.delta = delta
 		# dimensions = curve values
 		phi = 0.01
 
@@ -75,6 +76,24 @@ class PFDA():
 			print(np.linalg.norm(data[:,s]-Y))
 		self.f = np.mean(Ym,axis = 0)
 
+		# MM=matrix(NA,N,1)
+		# for(i in 1:N){
+		# 	MM[i,1]=sqrt(pracma::trapz(grid,xg[,i]^2))
+		# }
+		# MAX=max(MM)
+
+		mm = np.zeros(N)
+		for i in range(N): 
+			mm[i] = np.sqrt(np.trapz(data[:,i],grid))
+		maxmm = mm.max()
+
+		# Delta2=((4*MAX^2)/(N^2))*(sum(e.val.z/((e.val.z+phi)^2))) # phi should not be zero
+		# delta=sqrt(((2*log(2/beta))/(alpha^2))*(Delta2))
+		d2 = ((4*maxmm**2) / (N**2)) * (np.sum(self.e_val_z/(self.e_val_z + phi)**2))
+		d = np.sqrt(((2*np.log(2.0/self.delta))/(self.epsilon**2))*(d2))
+
+		self.f_tilda = self.f + d*self.Z
+
 	def _kernel_matrix(self, X, function):
 		# X is (n x d)
 		# Returns (n x n) output Z where
@@ -83,6 +102,10 @@ class PFDA():
 		# function(x,y)
 		K = np.ones((X.shape[0],X.shape[0]))
 		for i in range(X.shape[0]): 
+			if i%1000 == 0: 
+				print('',end='.')
+				sys.stdout.flush()
+
 			for j in range(i,X.shape[0]):
 				k = function(X[i,:],X[j,:])
 				K[i,j] = k

@@ -40,13 +40,14 @@ for q in yy:
 
 
 np.random.seed(20)
-algo = PFDA(1.0, curves, k)
+algo = PFDA(1.0, curves, k, delta = 0.01)
 
 
 plt.figure()
 for curve in curves: 
 	plt.plot(yy,curve,'k-',alpha = 0.1)
-plt.plot(yy,algo.f,linewidth = 2,label = "Private Function Mean")
+plt.plot(yy,algo.f,linewidth = 2,label = "Function Mean")
+plt.plot(yy,algo.f_tilda,linewidth = 2,label = "Private Function Mean")
 plt.plot(yy,gt, label = "Ground Truth KDE")
 plt.legend()
 plt.show()

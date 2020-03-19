@@ -14,41 +14,41 @@ def KDE(x,data):
 	return val / n 
 
 
-# N = 1000
-# d = 1
-# np.random.seed(42) # lol
-# data1 = np.random.normal(loc = 0.2,scale = 0.1,size = (N,d))
-# data2 = np.random.normal(loc = 0.8,scale = 0.02,size = (N,d))
-# data = np.concatenate((data1,data2),axis = 0)
+N = 1000
+d = 1
+np.random.seed(42) # lol
+data1 = np.random.normal(loc = 0.2,scale = 0.1,size = (N,d))
+data2 = np.random.normal(loc = 0.8,scale = 0.02,size = (N,d))
+data = np.concatenate((data1,data2),axis = 0)
 
-# print(data.shape)
-# algo = ScalableSpectralDP(1.0, 100, data, KDE, 1.0 / N, debug = True)
-
-
-# handle = open('temp.pickle', 'wb')
-# pickle.dump(algo, handle, protocol=pickle.HIGHEST_PROTOCOL)
-# handle = open('temp.pickle', 'rb')
-# algo = pickle.load(handle)
-
-# algo.set_epsilon(1000.0)
+print(data.shape)
+algo = ScalableSpectralDP(1.0, 100, data, KDE, 1.0 / N, debug = True)
 
 
-# q = np.linspace(0,1,100)
-# q = np.reshape(q,(100,1))
+handle = open('temp.pickle', 'wb')
+pickle.dump(algo, handle, protocol=pickle.HIGHEST_PROTOCOL)
+handle = open('temp.pickle', 'rb')
+algo = pickle.load(handle)
 
-# real_out = []
-# fake_out = []
-# for qi in q: 
-# 	real_out.append(KDE(qi,data))
-# 	fake_out.append(algo.query(qi))
+algo.set_epsilon(1000.0)
 
 
-# plt.figure()
-# plt.plot(q,real_out,label = "Real KDE")
-# plt.plot(q,fake_out, label = "Spectral Approximation")
-# plt.legend()
-# plt.show()
-# # sys.exit()
+q = np.linspace(0,1,100)
+q = np.reshape(q,(100,1))
+
+real_out = []
+fake_out = []
+for qi in q: 
+	real_out.append(KDE(qi,data))
+	fake_out.append(algo.query(qi))
+
+
+plt.figure()
+plt.plot(q,real_out,label = "Real KDE")
+plt.plot(q,fake_out, label = "Spectral Approximation")
+plt.legend()
+plt.show()
+# sys.exit()
 
 
 N = 100

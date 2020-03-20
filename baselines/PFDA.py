@@ -9,11 +9,18 @@ Approach is to return a mean of FUNCTIONS
 You give it a bunch of functions, it returns the mean
 
 
+This was originally in R 
+I do not like R 
+
+
 '''
 
 
 class PFDA():
 	def __init__(self, epsilon, data, function, delta = 0.1, debug = False):
+		if data.shape[0] < data.shape[1]: 
+			print("Invalid data shape: need more rows / fewer columns")
+			return
 		self.epsilon = epsilon
 		self.delta = delta
 		# dimensions = curve values
@@ -24,6 +31,7 @@ class PFDA():
 	    # n=length(grid)
 		grid = np.linspace(0,1,data.shape[0])
 		n = len(grid)
+		N = data.shape[1]
 
 		# 1. Create gram matrix
 		# Sig=matrix(nrow=n,ncol=n)   # covariance matrix in the grid [0,1]
@@ -48,6 +56,7 @@ class PFDA():
 		# for(i in 1:m){
 		# Z=Z+sqrt(e.val.z[i])*rnorm(1)*e.vec.z[,i]
 		# }
+		print(self.e_vec_z.shape)
 		self.Z = np.zeros(n)
 		for i in range(m):
 			self.Z += np.sqrt(self.e_val_z[i])*np.random.normal() * self.e_vec_z[:,i]
@@ -65,7 +74,6 @@ class PFDA():
 		# Ym[,s]=Y
 		# }
 		# f=rowMeans(x = Ym)
-		N = data.shape[1]
 		Ym = np.zeros((n,N))
 		for s in range(N):
 			Y = np.zeros(n)
@@ -75,6 +83,9 @@ class PFDA():
 			Ym[:,s] = Y
 			print(np.linalg.norm(data[:,s]-Y))
 		self.f = np.mean(Ym,axis = 0)
+		print('Function output:')
+		for fi in self.f: 
+			print(fi,end = ',')
 
 		# MM=matrix(NA,N,1)
 		# for(i in 1:N){
@@ -91,8 +102,11 @@ class PFDA():
 		# delta=sqrt(((2*log(2/beta))/(alpha^2))*(Delta2))
 		d2 = ((4*maxmm**2) / (N**2)) * (np.sum(self.e_val_z/(self.e_val_z + phi)**2))
 		d = np.sqrt(((2*np.log(2.0/self.delta))/(self.epsilon**2))*(d2))
+		print(d.shape)
+		print(self.f.shape,d.shape,self.Z.shape)
 
-		self.f_tilda = self.f + d*self.Z
+		self.f_tilda = self.f + d*self.Z[0:len(self.f)] # silly R language stuff where R can "add" together 
+		# different sized vectors AGHHFHHhFHFHFHHFFFH THE HUManITY WHAHFAKJSDAAA AWHAAA ATHAHHFFAS 
 
 	def _kernel_matrix(self, X, function):
 		# X is (n x d)

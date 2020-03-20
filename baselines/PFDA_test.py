@@ -20,7 +20,7 @@ def KDE(x,data):
 def k(x,y): 
 	return np.exp(-np.linalg.norm(x - y)**2 / 0.01 )
 
-N = 100
+N = 200
 d = 1
 np.random.seed(42) # lol
 data = np.random.normal(loc = -0.2,scale = 0.1,size = (N,d))

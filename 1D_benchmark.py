@@ -49,6 +49,7 @@ def ScaledKDE(x,data):
 salaries = np.loadtxt('data/sf_employee_2018.csv',delimiter = '\n')
 # salaries = np.loadtxt('data/nyc_rs.csv',delimiter = '\n')
 N = len(salaries)
+print(N)
 q = np.linspace(10000,250000,200)
 epsilon = 1.0 
 
@@ -56,7 +57,7 @@ epsilon = 1.0
 # gtruth = np.zeros_like(q)
 # for i,qi in enumerate(q): 
 #     gtruth[i] = KDE(qi,salaries)
-# plt.plot(q,gtruth, label = 'KDE')
+# plt.plot(q,gtruth, 'k', linewidth = 2.0, label = 'KDE')
 
 
 # # KME 
@@ -68,7 +69,7 @@ epsilon = 1.0
 # 	kme_results[i] = kmeAlgo.query(qi,kernel)
 # plt.plot(q,kme_results, label = 'KME')
 
-# Bernstein 
+# # Bernstein 
 # scaled_data = np.reshape(salaries*1.0/scale_factor,(N,1))
 # bernsteinM = 50
 # bernsteinAlgo = ScalableBernsteinDP(epsilon, bernsteinM, scaled_data, ScaledKDE, 1.0 / N)
@@ -78,7 +79,7 @@ epsilon = 1.0
 # plt.plot(q,bernstein_results, label = 'Bernstein')
 
 # Spectral
-# spectralM = 50
+# spectralM = 2
 # scaled_data = np.reshape(salaries*1.0/scale_factor,(N,1))
 # spectralAlgo = ScalableSpectralDP(epsilon, spectralM, scaled_data, ScaledKDE, 1.0 / N)
 # spectral_results = np.zeros_like(q)
@@ -93,44 +94,30 @@ def g(x,y):
 	return np.exp(-np.linalg.norm(x - y)**2 / 0.01 )
 pfdaAlgo = PFDA(epsilon, curves, g, delta = 0.01)
 plt.plot(q,pfdaAlgo.f_tilda,label = 'PFDA')
-np.savetxt("PFDA.txt", pfdaAlgo.f_tilda, delimiter=',')
+np.savetxt("PFDA-f-tilda.txt", pfdaAlgo.f_tilda, delimiter=',')
+np.savetxt("PFDA-f.txt", pfdaAlgo.f, delimiter=',')
+np.savetxt("PFDA-Z.txt", pfdaAlgo.Z, delimiter=',')
+print(pfdaAlgo.d2)
 
 # RACE
+# reps = 200
+# hash_range = 1000
+# lsh = L2LSH(reps,1,bandwidth)
 
+# S = RACE(reps, hash_range)
+# for xi in salaries: 
+# 	S.add(lsh.hash(xi))
+# S.set_epsilon(epsilon)
+
+# race_results = np.zeros_like(q)
+# for i,qi in enumerate(q):
+# 	race_results[i] = S.query(lsh.hash(qi))
+# plt.plot(q,race_results, label = 'RACE')
 
 
 
 plt.legend()
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

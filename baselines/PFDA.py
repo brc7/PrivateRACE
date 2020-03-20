@@ -102,8 +102,9 @@ class PFDA():
 		# delta=sqrt(((2*log(2/beta))/(alpha^2))*(Delta2))
 		d2 = ((4*maxmm**2) / (N**2)) * (np.sum(self.e_val_z/(self.e_val_z + phi)**2))
 		d = np.sqrt(((2*np.log(2.0/self.delta))/(self.epsilon**2))*(d2))
-		print(d.shape)
-		print(self.f.shape,d.shape,self.Z.shape)
+		print("VERY IMPORTANT")
+		print("D2 = ",d2)
+		self.d2 = d2
 
 		self.f_tilda = self.f + d*self.Z[0:len(self.f)] # silly R language stuff where R can "add" together 
 		# different sized vectors AGHHFHHhFHFHFHHFFFH THE HUManITY WHAHFAKJSDAAA AWHAAA ATHAHHFFAS 

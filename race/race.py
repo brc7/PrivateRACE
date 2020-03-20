@@ -41,7 +41,7 @@ class RACE():
 
 	def query(self, hashvalues):
 		mean = 0
-		N = np.sum(self.counts[0,:])
+		N = np.sum(self.counts) / self.R
 		for idx, hashvalue in enumerate(hashvalues): 
 			rehash = int(hashvalue)
 			rehash = rehash % self.W

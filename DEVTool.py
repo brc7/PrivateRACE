@@ -60,7 +60,7 @@ if args.race:
 		for i,q in enumerate(queries): # for each query
 			val = algo.query(lsh.hash(np.array(q)))
 			values[i] = val
-			if i%100 == 0: 
+			if i%1000 == 0: 
 				sys.stdout.write('\r')
 				sys.stdout.write('Progress: {0:.4f}'.format((j*NQ + i)/(NQ*len(args.epsilon)) * 100)+' %')
 				sys.stdout.flush()
@@ -86,9 +86,10 @@ if args.bernstein:
 		for i,q in enumerate(queries):
 			val = algo.query(q/scale_factor)
 			values[i] = val
-			sys.stdout.write('\r')
-			sys.stdout.write('Progress: {0:.4f}'.format((j*NQ + i)/(NQ*len(args.epsilon)) * 100)+' %')
-			sys.stdout.flush()
+			if i%1000 == 0: 
+				sys.stdout.write('\r')
+				sys.stdout.write('Progress: {0:.4f}'.format((j*NQ + i)/(NQ*len(args.epsilon)) * 100)+' %')
+				sys.stdout.flush()
 		err = np.abs(val - gtruth) / gtruth
 		results.append((np.mean(err),np.std(err)))
 	sys.stdout.write('\n')
@@ -120,9 +121,10 @@ if args.kmerelease:
 		for i,q in enumerate(queries):
 			val = algo.query(q,kernel)
 			values[i] = val
-			sys.stdout.write('\r')
-			sys.stdout.write('Progress: {0:.4f}'.format((j*NQ + i)/(NQ*len(args.epsilon)) * 100)+' %')
-			sys.stdout.flush()
+			if i%1000 == 0: 
+				sys.stdout.write('\r')
+				sys.stdout.write('Progress: {0:.4f}'.format((j*NQ + i)/(NQ*len(args.epsilon)) * 100)+' %')
+				sys.stdout.flush()
 		err = np.abs(val - gtruth) / gtruth
 		results.append((np.mean(err),np.std(err)))
 	sys.stdout.write('\n')

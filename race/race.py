@@ -25,7 +25,7 @@ class RACE():
 		N = np.sum(self.real_counts[0,:])
 		noise = np.random.laplace(scale = self.R / (N * epsilon), size=self.real_counts.shape)
 		noise = np.floor(noise)
-		self.counts = np.array(noise,dtype = self.dtype)
+		self.counts = self.real_counts + np.array(noise,dtype = self.dtype)
 
 	def clear(self): 
 		self.counts = np.zeros((self.R,self.W), dtype = self.dtype)

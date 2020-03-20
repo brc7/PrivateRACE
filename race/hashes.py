@@ -18,7 +18,7 @@ class L2LSH():
 
 
 	def hash(self,x): 
-		return np.floor( (np.dot(self.W,x) + self.b)/self.r )
+		return np.floor( (np.squeeze(np.dot(self.W,x)) + self.b)/self.r )
 
 
 def P_L2(c,w):

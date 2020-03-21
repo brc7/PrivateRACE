@@ -88,16 +88,18 @@ epsilon = 1.0
 # plt.plot(q,spectral_results, label = 'Spectral')
 
 # PFDA 
-curves = [[ScaledKernel(xi,qi) for qi in q] for xi in salaries]
+curves = [[kernel(xi,qi) for qi in q] for xi in salaries]
 curves = np.array(curves)
+print(curves.shape)
 def g(x,y): 
 	return np.exp(-np.linalg.norm(x - y)**2 / 0.01 )
 pfdaAlgo = PFDA(epsilon, curves, g, delta = 0.01)
-plt.plot(q,pfdaAlgo.f_tilda,label = 'PFDA')
 np.savetxt("PFDA-f-tilda.txt", pfdaAlgo.f_tilda, delimiter=',')
 np.savetxt("PFDA-f.txt", pfdaAlgo.f, delimiter=',')
 np.savetxt("PFDA-Z.txt", pfdaAlgo.Z, delimiter=',')
 print(pfdaAlgo.d2)
+
+plt.plot(q,pfdaAlgo.f_tilda,label = 'PFDA')
 
 # RACE
 # reps = 200

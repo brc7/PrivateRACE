@@ -30,7 +30,7 @@ NQ,d = queries.shape
 gtruth = np.loadtxt(args.gtruth,delimiter = '\n')
 
 if args.race: 
-	print("Querying RACE")
+	print("Querying RACE",args.race[0])
 	sys.stdout.flush()
 
 
@@ -52,7 +52,7 @@ if args.race:
 
 	start = time.time()
 	results = [] # all epsilon values
-	values = np.zeros_like(gtruth) # results for each query
+	# values = np.zeros_like(gtruth) # results for each query
 
 	for j,ep in enumerate(args.epsilon): # for each epsilon
 		algo.set_epsilon(ep) # private wth this epsilon
@@ -73,7 +73,7 @@ if args.race:
 	print(results)
 
 if args.bernstein: 
-	print("Querying Bernstein")
+	print("Querying Bernstein",args.bernstein[0])
 	sys.stdout.flush()
 
 	f = open(args.bernstein[0],'rb')
@@ -81,25 +81,26 @@ if args.bernstein:
 	algo = pickle.load(f)
 	start = time.time()
 	results = []
-	values = np.zeros_like(gtruth)
+	# values = np.zeros_like(gtruth)
 	for j,ep in enumerate(args.epsilon): 
 		algo.set_epsilon(ep)
+		errors = np.zeros_like(gtruth)
 		for i,q in enumerate(queries):
 			val = algo.query(q/scale_factor)
-			values[i] = val
+			errors[i] = np.abs(val - gtruth[i])/gtruth[i]
 			if i%1000 == 0: 
 				sys.stdout.write('\r')
 				sys.stdout.write('Progress: {0:.4f}'.format((j*NQ + i)/(NQ*len(args.epsilon)) * 100)+' %')
 				sys.stdout.flush()
-		err = np.abs(val - gtruth) / gtruth
-		results.append((np.mean(err),np.std(err)))
+		# err = np.abs(val - gtruth) / gtruth
+		results.append((np.mean(errors),np.std(errors))) # mean,std error 
 	sys.stdout.write('\n')
 	end = time.time()
 	print("Query time: (avg, ms) ",(end-start)*1000/(gtruth.shape[0]*NQ))
 	print(results)
 
 if args.kmerelease: 
-	print("Querying KME Release")
+	print("Querying KME Release",args.kmerelease[0])
 	sys.stdout.flush() 
 
 	f = open(args.kmerelease[0],'rb')
@@ -116,18 +117,19 @@ if args.kmerelease:
 	algo = pickle.load(f)
 	start = time.time()
 	results = []
-	values = np.zeros_like(gtruth)
+	# values = np.zeros_like(gtruth)
 	for j,ep in enumerate(args.epsilon): 
 		algo.set_epsilon(ep)
+		errors = np.zeros_like(gtruth)
 		for i,q in enumerate(queries):
 			val = algo.query(q,kernel)
-			values[i] = val
+			errors[i] = np.abs(val - gtruth[i])/gtruth[i]
 			if i%1000 == 0: 
 				sys.stdout.write('\r')
 				sys.stdout.write('Progress: {0:.4f}'.format((j*NQ + i)/(NQ*len(args.epsilon)) * 100)+' %')
 				sys.stdout.flush()
-		err = np.abs(val - gtruth) / gtruth
-		results.append((np.mean(err),np.std(err)))
+		# err = np.abs(val - gtruth) / gtruth
+		results.append((np.mean(errors),np.std(errors))) # mean,std error 
 	sys.stdout.write('\n')
 	end = time.time()
 	print("Query time: (avg, ms) ",(end-start)*1000/(gtruth.shape[0]*NQ))

@@ -57,15 +57,16 @@ if args.race:
 	for j,ep in enumerate(args.epsilon): # for each epsilon
 		algo.set_epsilon(ep) # private wth this epsilon
 		# print("Epsilon =",ep)
+		errors = np.zeros_like(gtruth)
 		for i,q in enumerate(queries): # for each query
 			val = algo.query(lsh.hash(np.array(q)))
-			values[i] = val
+			errors[i] = np.abs(val - gtruth[i])/gtruth[i]
 			if i%1000 == 0: 
 				sys.stdout.write('\r')
 				sys.stdout.write('Progress: {0:.4f}'.format((j*NQ + i)/(NQ*len(args.epsilon)) * 100)+' %')
 				sys.stdout.flush()
-		err = np.abs(val - gtruth) / gtruth # error vector
-		results.append((np.mean(err),np.std(err))) # mean,std error 
+		# err = np.abs(val - gtruth) / gtruth # error vector
+		results.append((np.mean(errors),np.std(errors))) # mean,std error 
 	sys.stdout.write('\n')
 	end = time.time()
 	print("Query time: (avg, ms) ",(end-start)*1000/(gtruth.shape[0]*NQ))

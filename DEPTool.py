@@ -22,6 +22,7 @@ parser.add_argument("-r","--race", type=int, nargs = 2, help="(range,reps) Prepa
 parser.add_argument("-b","--bernstein", type=int, nargs = 2, help="Prepare BernsteinDP with a K-lattice")
 # parser.add_argument("-s","--spectral", type=int, help="Prepare SpectralDP with a K-lattice")
 parser.add_argument("-kme","--kmerelease", type=int, nargs = 2, help="(M,sigma) Kernel mean embedding release with M synthetic points, Gaussian distributed with sigma")
+parser.add_argument("-kme2","--kmerelease2", type=int, nargs = 3, help="(M,sigma,mean) Kernel mean embedding release with M synthetic points, Gaussian distributed with sigma around (mean,mean,mean)")
 parser.add_argument("-v","--verbose", help="Verbose output",action="store_true")
 args = parser.parse_args()
 
@@ -158,6 +159,35 @@ if args.kmerelease:
 
 	print("KMEReleaseDP saved to",filename)
 	sys.stdout.flush()
+
+
+
+if args.kmerelease2:
+	# do KME release
+	M = args.kmerelease[0]
+	sigma = args.kmerelease[1]
+	mean = args.kmerelease[2]
+	print("Preprocessing KMERelease with M =",M,"sigma =",sigma,"mean =",mean)
+	sys.stdout.flush()
+
+	start = time.time()
+	
+	kf = lambda x,y : kernel(x,y,args.bandwidth) # special kernel function format for KMERelease
+	algo = KMEReleaseDP_2(1.0, M, dataset, kf, loc = mean, sigma_public = sigma, debug = args.verbose)
+
+	end = time.time()
+	print("KMEReleaseDP2:",end - start,"s")
+	print("Saving KMEReleaseDP2...")
+	sys.stdout.flush()
+
+	# Now save it
+	filename = os.path.splitext(args.data)[0]+'KMEReleaseDP2-'+str(M)+'-'+str(sigma)+'.pickle'
+	with open(filename, 'wb') as handle: 
+		pickle.dump(algo, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+	print("KMEReleaseDP2 saved to",filename)
+	sys.stdout.flush()
+
 
 
 # if args.spectral: 

@@ -164,9 +164,9 @@ if args.kmerelease:
 
 if args.kmerelease2:
 	# do KME release
-	M = args.kmerelease[0]
-	sigma = args.kmerelease[1]
-	mean = args.kmerelease[2]
+	M = args.kmerelease2[0]
+	sigma = args.kmerelease2[1]
+	mean = args.kmerelease2[2]
 	print("Preprocessing KMERelease with M =",M,"sigma =",sigma,"mean =",mean)
 	sys.stdout.flush()
 

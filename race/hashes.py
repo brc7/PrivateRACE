@@ -44,7 +44,8 @@ class SRPMulti():
 		# reps = number of hashes (reps)
 		# d = dimensionality
 		# p = "bandwidth" = number of hashes (projections) per hash code
-		self.N = reps*p
+		self.N = reps*p # number of hash computations
+		self.N_codes = reps # number of output codes
 		self.d = d
 		self.p = p
 
@@ -69,6 +70,28 @@ class SRPMulti():
 			return(h)
 
 
+class FastSRPMulti():
+	# multiple SRP hashes combined into a set of N hash codes
+	def __init__(self, reps, d, p): 
+		# reps = number of hashes (reps)
+		# d = dimensionality
+		# p = "bandwidth" = number of hashes (projections) per hash code
+		self.N = reps*p # number of hash computations
+		self.N_codes = reps # number of output codes
+		self.d = d
+		self.p = p
+
+		# set up the gaussian random projection vectors
+		self.W = np.random.normal(size = (self.N,d))
+		self.powersOfTwo = np.array([2**i for i in range(self.p)])
+
+	def hash(self,x): 
+		# p is the number of concatenated hashes that go into each
+		# of the final output hashes
+		h = np.sign( np.dot(self.W,x) )
+		h = np.clip( h, 0, 1)
+		h = np.reshape(h,(self.N_codes,self.p))
+		return np.dot(h,self.powersOfTwo)
 
 
 

@@ -22,6 +22,9 @@ class RACE():
 
 	def set_epsilon(self, epsilon):
 		# make the whole RACE sketch epsilon-differentially private
+		if epsilon is None: 
+			self.counts = self.real_counts.copy()
+			return
 		N = np.sum(self.real_counts[0,:])
 		noise = np.random.laplace(scale = self.R / (N * epsilon), size=self.real_counts.shape)
 		noise = np.floor(noise)

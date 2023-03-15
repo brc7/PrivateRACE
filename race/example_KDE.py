@@ -34,7 +34,7 @@ data = np.vstack((D1a,D1b,D1c,D1d))
 for d in data: 
 	S.add(lsh.hash(d))
 
-S.make_private(epsilon)
+S.set_epsilon(epsilon)
 
 xmin,xmax = (-80,80)
 ymin,ymax = (-80,80)

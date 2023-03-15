@@ -39,7 +39,7 @@ for d in D1:
 
 
 # Make the sketch private
-S.make_private(epsilon)
+S.set_epsilon(epsilon)
 
 # Plot the decision regions for the private max likelihood classifier
 M = 100
